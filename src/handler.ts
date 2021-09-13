@@ -1,3 +1,5 @@
-export async function handleRequest(request: Request): Promise<Response> {
-  return new Response(`request method: ${request.method}`)
-}
+import { bot } from './bot'
+
+bot.onMessage(async (event) => {
+  await bot.send(event, event.message as string)
+})
