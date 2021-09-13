@@ -1,39 +1,50 @@
-# ʕ •́؈•̀) `workers-typescript-template`
+# OneBot-Worker
 
-A batteries included template for kick starting a TypeScript Cloudflare worker project.
+> **一个使用Cloudflare Worker实现的OneBot SDK (概念验证)**
 
-## Note: You must use [wrangler](https://developers.cloudflare.com/workers/cli-wrangler/install-update) 1.17 or newer to use this template.
+---
 
-## 🔋 Getting Started
+## 开始使用
 
-This template is meant to be used with [Wrangler](https://github.com/cloudflare/wrangler). If you are not already familiar with the tool, we recommend that you install the tool and configure it to work with your [Cloudflare account](https://dash.cloudflare.com). Documentation can be found [here](https://developers.cloudflare.com/workers/tooling/wrangler/).
+1. 安装`Wrangler`
 
-To generate using Wrangler, run this command:
+    ```shell
+    npm install -g wrangler # 安装Wrangler
+    wrangler login # 登录Wrangler
+    ```
 
-```bash
-wrangler generate my-ts-project https://github.com/cloudflare/worker-typescript-template
-```
+2. 下载本项目并安装依赖
 
-### 👩 💻 Developing
+    ```shell
+    npm install
+    ```
 
-[`src/index.ts`](./src/index.ts) calls the request handler in [`src/handler.ts`](./src/handler.ts), and will return the [request method](https://developer.mozilla.org/en-US/docs/Web/API/Request/method) for the given request.
+3. 部署到Cloudflare Worker
 
-### 🧪 Testing
+    ```shell
+    wrangler publish
+    ```
 
-This template comes with jest tests which simply test that the request handler can handle each request method. `npm test` will run your tests.
+4. 使用无头客户端进行连接
 
-### ✏️ Formatting
+    - 反向Universal WS上报地址: `wss://<你的worker地址>/ws`
 
-This template uses [`prettier`](https://prettier.io/) to format the project. To invoke, run `npm run format`.
+## 进行开发
 
-### 👀 Previewing and Publishing
+**API仍然处于早期阶段, 可能会随时更改!**
 
-For information on how to preview and publish your worker, please see the [Wrangler docs](https://developers.cloudflare.com/workers/tooling/wrangler/commands/#publish).
+目前本项目自带一个简单的复读机示例, 请查看本项目的[`src/handler.ts`](./src/handler.ts)文件
 
-## 🤢 Issues
+由于Wrangler的WebSocket支持目前仍然有Bug, 所以只能进行线上直接调试, 不能通过`wrangler dev`本地调试
 
-If you run into issues with this specific project, please feel free to file an issue [here](https://github.com/cloudflare/workers-typescript-template/issues). If the problem is with Wrangler, please file an issue [here](https://github.com/cloudflare/wrangler/issues).
+## 许可
 
-## ⚠️ Caveats
+本项目使用MIT协议进行许可
 
-The `service-worker-mock` used by the tests is not a perfect representation of the Cloudflare Workers runtime. It is a general approximation. We recommend that you test end to end with `wrangler dev` in addition to a [staging environment](https://developers.cloudflare.com/workers/tooling/wrangler/configuration/environments/) to test things before deploying.
+## 鸣谢
+
+- Cloudflare: 提供了白嫖怪最爱的Worker~~和世界上最烂的CLI工具Wrangler~~
+- [`botuniverse/onebot`](https://github.com/botuniverse/onebot): 提供了一个统一的机器人协议
+- [`nonebot/aiocqhttp`](https://github.com/nonebot/aiocqhttp): 提供了SDK实现的参考
+
+就这样啦, 晚安~
