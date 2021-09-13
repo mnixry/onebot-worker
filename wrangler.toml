@@ -5,7 +5,12 @@ account_id = ""
 route = ""
 workers_dev = true
 
+[dev]
+local_protocol = "http"
+upstream_protocol = "http"
+
 [build]
 command = "npm install && npm run build"
+
 [build.upload]
 format = "service-worker"
