@@ -1,10 +1,10 @@
 import { ApiCallRequest, ApiCallResponse, BotEvent } from './model'
 import { EventBus } from './bus'
-import { Future } from './future'
-import { ActionError, NotAvailableError } from './errors'
+import { Future } from '../utils/future'
+import { ActionError, NotAvailableError, TimeoutError } from './errors'
 
 export interface BotConfig {
-  timeout?: number
+  timeout: number
 }
 
 export type EventListener<E extends BotEvent = BotEvent> = (
@@ -64,6 +64,11 @@ export class OneBotWorker {
     this.futures.set(seq, future)
     this.ws.send(JSON.stringify(payload))
     future.finally(() => this.futures.delete(seq))
+    Future.sleep(this.configs.timeout || 60).then(() =>
+      future.setError(
+        new TimeoutError('timeout reached', this.configs.timeout),
+      ),
+    )
 
     const result = await future
     if (result.status === 'failed') throw new ActionError(result)

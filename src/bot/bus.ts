@@ -16,11 +16,18 @@ type Subscriber = (...args: any[]) => Promise<any>
 export class EventBus<C extends Subscriber = Subscriber> {
   protected subscribers = new DefaultMap<string, Set<C>>(() => new Set<C>())
 
-  protected rsplit(str: string, sep: string, maxSplit?: number): string[] {
-    const split = str.split(sep)
-    return maxSplit
-      ? [split.slice(0, -maxSplit).join(sep)].concat(split.slice(-maxSplit))
-      : split
+  protected async gather(args: any[], ...funcs: C[]) {
+    let failed = 0,
+      succeed = 0
+    await Promise.all(
+      funcs.map((f) =>
+        f(...args).then(
+          () => succeed++,
+          () => failed++,
+        ),
+      ),
+    )
+    return { failed, succeed, total: funcs.length }
   }
 
   subscribe(event: string, func: C): void {
@@ -42,9 +49,14 @@ export class EventBus<C extends Subscriber = Subscriber> {
         this.subscribers.get(currentEvent).size <= 0
       )
         continue
-      for (const callback of this.subscribers.get(currentEvent)) {
-        await callback(...args)
-      }
+      const { failed, succeed, total } = await this.gather(
+        args,
+        ...this.subscribers.get(currentEvent),
+      )
+      console.log(
+        `Event bus for event "${currentEvent}" completed, ` +
+          `total=${total} failed=${failed} succeed=${succeed}`,
+      )
     }
   }
 }
