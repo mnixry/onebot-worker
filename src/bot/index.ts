@@ -77,7 +77,7 @@ export class OneBotWorker {
   async handleEvent(data: Event | ApiCallResponse): Promise<void> {
     if ('post_type' in data) {
       const event = new Event(data)
-      const date = new Date(data.time).toISOString()
+      const date = new Date(data.time * 1000).toISOString()
       console.log(`[${date}] Received event "${event.name}":`, event)
       await this.bus.emit(event.name, event)
     } else if (data.echo) {

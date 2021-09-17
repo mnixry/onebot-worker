@@ -28,7 +28,7 @@ export class Message extends Array<MessageSegment> {
       const segments = message.map(
         ({ type, data }) => new MessageSegment(type, data),
       )
-      super.concat(segments)
+      super.push(...segments)
     } else {
       super.push(new MessageSegment(message.type, message.data))
     }
