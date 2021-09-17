@@ -1,15 +1,14 @@
-import { ApiCallRequest, ApiCallResponse, BotEvent } from './model'
+import { ApiCallRequest, ApiCallResponse, Event } from './model'
 import { EventBus } from './bus'
 import { Future } from '../utils/future'
 import { ActionError, NotAvailableError, TimeoutError } from './errors'
+import { Message } from './message'
 
 export interface BotConfig {
   timeout: number
 }
 
-export type EventListener<E extends BotEvent = BotEvent> = (
-  event: E,
-) => Promise<void>
+export type EventListener<E extends Event = Event> = (event: E) => Promise<void>
 
 export class OneBotWorker {
   protected ws: WorkerWebSocket | undefined
@@ -75,24 +74,21 @@ export class OneBotWorker {
     return result.data
   }
 
-  async handleEvent(event: BotEvent | ApiCallResponse): Promise<void> {
-    if ('post_type' in event) {
-      const eventType =
-        `${event.post_type}.` +
-        event[`${event.post_type}_type`] +
-        (event.sub_type ? `.${event.sub_type}` : '')
-      event.name = eventType
-      console.log(`Received event "${eventType}":`, event)
+  async handleEvent(data: Event | ApiCallResponse): Promise<void> {
+    if ('post_type' in data) {
+      const event = new Event(data)
+      const date = new Date(data.time).toISOString()
+      console.log(`[${date}] Received event "${event.name}":`, event)
       await this.bus.emit(event.name, event)
-    } else if (event.echo) {
-      if (this.futures.has(event.echo))
-        this.futures.get(event.echo)?.setResult(event)
+    } else if (data.echo) {
+      if (this.futures.has(data.echo))
+        this.futures.get(data.echo)?.setResult(data)
     } else {
-      console.error('Unidentified websocket message', event)
+      console.warn('Unidentified websocket message', data)
     }
   }
 
-  async send(event: BotEvent, message: Array<any> | string): Promise<void> {
+  async send(event: Event, message: Message): Promise<void> {
     const type = 'group_id' in event ? 'group_id' : 'user_id'
     const params = { message, [type]: event[type] }
     return await this.callApi('send_msg', params)
