@@ -17,17 +17,18 @@ export class EventBus<C extends Subscriber = Subscriber> {
   protected subscribers = new DefaultMap<string, Set<C>>(() => new Set<C>())
 
   protected async gather(args: any[], ...funcs: C[]) {
-    let failed = 0,
-      succeed = 0
+    let succeed = 0
     await Promise.all(
-      funcs.map((f) =>
-        f(...args).then(
-          () => succeed++,
-          () => failed++,
-        ),
+      funcs.map(
+        async (f) =>
+          await f(...args)
+            .then(() => succeed++)
+            .catch((err) =>
+              console.error('Error occurred while handling event:', err),
+            ),
       ),
     )
-    return { failed, succeed, total: funcs.length }
+    return { total: funcs.length, succeed, failed: funcs.length - succeed }
   }
 
   subscribe(event: string, func: C): void {
