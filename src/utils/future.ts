@@ -13,13 +13,11 @@ export class Future<T = void> extends Promise<T> {
   constructor(
     executor?: (resolve: ResolveCallback<T>, reject: RejectCallback) => void,
   ) {
-    super(
-      executor ||
-        ((resolve, reject) => {
-          this.setResult = resolve
-          this.setError = reject
-        }),
-    )
+    super((resolve, reject) => {
+      this.setResult = resolve
+      this.setError = reject
+      executor?.call(this, resolve, reject)
+    })
   }
 
   static sleep(ms: number): Future<void> {
