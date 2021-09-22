@@ -1,17 +1,18 @@
 {
-  "name": "worker-typescript-template",
-  "version": "1.0.0",
-  "description": "Cloudflare worker TypeScript template",
+  "name": "onebot-worker",
+  "version": "0.1.0",
+  "description": "A proof of concept of using Cloudflare Worker as OneBot client ",
   "main": "dist/worker.js",
   "scripts": {
-    "build": "webpack",
+    "build": "esbuild --bundle --sourcemap --outdir=dist ./src/index.ts",
     "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "test": "jest --config jestconfig.json --verbose",
     "dev": "miniflare --watch --debug"
   },
-  "author": "author",
-  "license": "MIT OR Apache-2.0",
+  "author": "Mix <mnixry@users.noreply.github.com>",
+  "repository": "https://github.com/mnixry/onebot-worker",
+  "license": "MIT",
   "eslintConfig": {
     "root": true,
     "extends": [
@@ -25,6 +26,7 @@
     "@types/service-worker-mock": "^2.0.1",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
+    "esbuild": "^0.12.28",
     "eslint": "^7.21.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-config-typescript": "^3.0.0",
@@ -34,8 +36,6 @@
     "service-worker-mock": "^2.0.5",
     "ts-jest": "^27.0.1",
     "ts-loader": "^9.2.2",
-    "typescript": "^4.3.2",
-    "webpack": "^5.38.1",
-    "webpack-cli": "^4.7.0"
+    "typescript": "^4.3.2"
   }
 }
